@@ -17,14 +17,13 @@ This specification is split into multiple parts.
 
 ---
 
+## Progress
+
+1. Successfully added token, deleted supplementary files. 
+
 ## Requirements Overview
 
 Students will implement a web application along with a supporting API to get the following data for a given user's GitHub profile. The backend will be implemented as a Node API using Express that will call GitHub's API to fetch data necessary to derive/display the data specified. The user will see a home page where they can choose between two options: **inspect** or **duel**.
-
-## Token setup
-
-In order to increase your rate limit with the GitHub API and improve overall testability of your application as you develop, you will need to create and use a GitHub token. Instructions for this process are included in the [token-setup/README.md](token-setup/README.md).
-
 
 ### Profile
 
