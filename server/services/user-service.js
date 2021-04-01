@@ -28,26 +28,9 @@ export const generateUsers = (usernames, response) => {
     })()
 }
 
-function generateResponseBody(data) {
-    return {
-        username: data.username,
-        name: data.name,
-        location: data.location,
-        bio: data.bio,
-        avatar_url: data.avatar_url,
-        titles: generateTitles(data),
-        favorite_language: getMostUsedLanguage(data.languageList),
-        public_repos: data.public_repos,
-        total_stars: data.starCount,
-        highest_starred: data.highestStarred,
-        perfect_repos: data.perfectRepos,
-        followers: data.followers,
-        following: data.following
-    };
-}
-
 /**
  * Returns user object from GitHub's API.
+ *
  * @param username of the user that is being fetched.
  * @returns {Promise<any>} the user information being returned by GitHub
  */
@@ -58,6 +41,7 @@ async function getUser(username) {
 
 /**
  * Returns a user's repositories from GitHub's API as an array of objects.
+ *
  * @param username of the user whose repositories are being returned.
  * @returns {Promise<any>} repositories being returned.
  */
@@ -66,11 +50,25 @@ async function getRepositories(username) {
     return repositories.data;
 }
 
+/**
+ * Returns the languages used in a specific user repository as an object. The object's keys represent the
+ * language name, the values represent the amount of bits that each language uses in that project.
+ *
+ * @param username of the user who has the repository.
+ * @param repository whose languages were fetching.
+ * @returns {Promise<any>} the languages we're fetching.
+ */
 async function getLanguages(username, repository) {
     let languages = await axios.get(`repos/${username}/${repository}/languages`)
     return languages.data
 }
 
+/**
+ * Organizes data to parse and iterate upon, this generates an object with the data used during user generation
+ *
+ * @param githubUser the github user we're storing the data for.
+ * @returns See function to see what is being returned.
+ */
 function generateData(githubUser) {
     return {
         username: githubUser.login,
@@ -95,6 +93,40 @@ function generateData(githubUser) {
     }
 }
 
+/**
+ * Organizes the data we have stored from a user in the format that it needs to have before being sent back
+ * to the client. Similar to generate data, but only with the relevant information for a response.
+ * @param data
+ * @returns see function for return type.
+ */
+function generateResponseBody(data) {
+    return {
+        username: data.username,
+        name: data.name,
+        location: data.location,
+        bio: data.bio,
+        avatar_url: data.avatar_url,
+        titles: generateTitles(data),
+        favorite_language: getMostUsedLanguage(data.languageList),
+        public_repos: data.public_repos,
+        total_stars: data.starCount,
+        highest_starred: data.highestStarred,
+        perfect_repos: data.perfectRepos,
+        followers: data.followers,
+        following: data.following
+    };
+}
+
+/**
+ * Generates an array with relevant information from the user repositories and populates the data relevant
+ * to the response. Mainly used for parsing and storing data, this array of objects is not directly sent back
+ * to the client, rather, information derived from it is.
+ *
+ * @param username of the GitHub user
+ * @param githubRepositories GitHub repositories of the GitHub user
+ * @param data of the GitHub user
+ * @returns {Promise<[]>} array of objects each representing a repository of the user.
+ */
 async function generateRepositories(username, githubRepositories, data) {
     let repositories = []
     for(let x = 0; x < githubRepositories.length; x++) {
@@ -125,20 +157,24 @@ async function generateRepositories(username, githubRepositories, data) {
     return repositories
 }
 
+/**
+ * Generates an array of languages representing the languages used in a specific repository, useful for some
+ * of the titles that are being generated for the user, like One-Trick Pony and Jack of all Trades.
+ *
+ * @param username of the GitHub user.
+ * @param name of the GitHub user's repository whose languages are being returned.
+ * @param data of the user.
+ * @returns {Promise<[]>} array of type [{ language: string, usage: number, pony: number }]
+ */
 async function generateLanguages(username, name, data) {
-    // Gets the raw language values for each repository
     const githubLanguages = await getLanguages(username, name)
-
-    // Gets the key, value pairs for each language in a repository
     const languageName = Object.keys(githubLanguages)
     const languageUsage = Object.values(githubLanguages)
-
     let languages = []
-
-    for(let y = 0; y < languageName.length; y++) {
+    for(let x = 0; x < languageName.length; x++) {
         let language = {
-            language: languageName[y],
-            usage: languageUsage[y],
+            language: languageName[x],
+            usage: languageUsage[x],
             pony: 1
         }
         languages.push(language)
@@ -147,13 +183,21 @@ async function generateLanguages(username, name, data) {
     return languages
 }
 
+/**
+ * Merges duplicate language objects to ensure that the master list of languages has unique values.
+ * For example, if multiple repositories have JavaScript as a language and usage values of 10000, 40000, and
+ * 100000, these values would be merged and there would only be one JavaScript value with the usage of
+ * 150000. If the language is used in every public repository that the user owns, it means that the language is a
+ * pony, which is also stored for title generation later.
+ *
+ * @param data of the user.
+ * @returns [{language: string, usage: number, pony: boolean}]
+ */
 function reduceLanguages(data) {
     return data.languageList.map(({ language }) => language)
-        // remove any duplicates
         .filter((language, index, array) => array.indexOf(language) === index)
         .map(language => ({
             language,
-            // sum up the values where the language matches
             usage: data.languageList.filter(entry => entry.language === language)
                 .reduce((accum, { usage }) => accum + usage, 0),
             pony: data.languageList.filter(entry => entry.language === language)
@@ -161,6 +205,13 @@ function reduceLanguages(data) {
         }));
 }
 
+/**
+ * Returns an array of strings that represent all the languages that are used in every public repository that the
+ * user owns, useful for generating the One-Trick Pony title.
+ *
+ * @param data of the user.
+ * @returns [string]
+ */
 function getPonies(data) {
     let ponies = []
     for(let x = 0; x < data.languageList.length; x++) {
@@ -171,6 +222,12 @@ function getPonies(data) {
     return ponies
 }
 
+/**
+ * Returns the most used language across every repository that the user owns.
+ *
+ * @param languages all the languages used in all the public repositories a user owns.
+ * @returns string | null
+ */
 function getMostUsedLanguage(languages) {
     if(languages.length === 0) {
         return null
@@ -184,6 +241,21 @@ function getMostUsedLanguage(languages) {
     return mostUsed.language
 }
 
+/**
+ * Generates and returns a user's titles based on specific requirements:
+ *
+ * - Forker: If more than half of the user's repositories are forked from other repositories.
+ * - One-Trick Pony: If at least one language is used in all repositories that the user owns.
+ * - Jack of all Trades: If more than 10 languages are used across all repositories that the user owns.
+ * - Stalker: If the user follows more than twice as many users as the users following them.
+ * - Mr. Popular: If the user is followed by more than twice of the users that they are following.
+ * - Founder: If the account was created before or on 2009. GitHub was launched in 2008.
+ * - Hatchling: If the account was created in 2021.
+ * - One-Hit Wonder: If more than half of the user stars belong to a single repository.
+ *
+ * @param data of the user whose titles are being generated.
+ * @returns [string]
+ */
 function generateTitles(data) {
     let titles = []
     if(data.forkCount > data.repositories.length / 2) {
