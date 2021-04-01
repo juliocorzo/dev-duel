@@ -92,27 +92,22 @@ function generateResponseBodyFast(data) {
 }
 
 function getFavoriteLanguage(languages) {
-    if(languages.length === 0) {
-        return null;
-    }
-    let languageCounter = {}, currentFavorite = languages[0], maxCount = 1;
-    for(let x = 0; x < languages.length; x++) {
-        let language = languages[x];
-        if(languageCounter[language] === null) {
-            languageCounter[language] = 1;
+    let compare = '';
+    let mostFrequentLanguage = '';
+    languages.reduce((acc, val) => {
+        if(val in acc) {
+            acc[val]++;
         }
         else {
-            languageCounter[language]++;
+            acc[val] = 1;
         }
-        if(languageCounter[language] > maxCount) {
-            currentFavorite = language;
-            maxCount = languageCounter[language];
-        } else if(languageCounter[language] === maxCount) {
-            currentFavorite += ", " + language;
-            maxCount = languageCounter[language];
+        if(acc[val] > compare) {
+            compare = acc[val];
+            mostFrequentLanguage = val;
         }
-    }
-    return currentFavorite;
+        return acc;
+    }, {})
+    return mostFrequentLanguage
 }
 
 function getPony(languages) {
