@@ -5,7 +5,8 @@ import token from '../../token'
 
 import validation from './validation'
 
-import { generateUser, generateUsers } from "../services/user-service";
+import { generateUserSlow, generateUsersSlow } from "../services/user-service-slow";
+import { generateUserFast, generateUsersFast } from "../services/user-service-fast"
 
 axios.defaults.baseURL = 'https://api.github.com/'
 axios.defaults.headers.common['Authorization'] = token
@@ -23,12 +24,34 @@ export default () => {
 
   /** GET /api/user/:username - Get user */
   router.get('/user/:username', validate(validation.user), (req, res) => {
-      generateUser(req.params.username, res)
+    generateUserFast(req.params.username, res)
   })
 
   /** GET /api/users? - Get users */
   router.get('/users/', validate(validation.users), (req, res) => {
-      generateUsers(req.query, res)
+      generateUsersFast(req.query, res)
+  })
+
+  /**
+   * GET /slow/user/:username
+   *
+   * A more accurate endpoint, that goes through all of the user's repositories and gets a better representation of
+   * language usage. The downside is that it takes a lot longer, because, for example, if a user has 100 repositories,
+   * this endpoint would make 102 requests to GitHub, one for user data, one for repository data, and 100 for
+   * repository language data.
+   */
+  router.get('/slow/user/:username', validate(validation.user), (req, res) => {
+    generateUserSlow(req.params.username, res)
+  })
+
+  /**
+   * GET /slow/users
+   *
+   * Returns an array of users based on the query, format is exactly the same as the other slow endpoint, but for
+   * multiple users.
+   */
+  router.get('/slow/users/', validate(validation.users), (req, res) => {
+    generateUsersSlow(req.query, res)
   })
 
   return router
