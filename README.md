@@ -25,6 +25,24 @@ This specification is split into multiple parts.
 
 1. Successfully added token, deleted supplementary files. 
 
+## Fast and slow implementations
+
+Fast implementation of the endpoints. Fast as in, less accurate and also more in line with what the original goal
+was. Instead of going into every repository and fetching its languages, these endpoints use the most used
+language in a repository as reported by GitHub.
+
+Why is this more inaccurate? Instead of counting the total amount of code in a language a user has
+submitted, it counts which is the most prominent language in each repository.
+
+What is the difference? Let's say a random GitHub user has 100 repositories, one of which contains the entire source
+code of Discord, a popular gaming messaging platform. Discord's desktop and web applications are written in React.js
+and Electron.js, mostly JavaScript, and a lot of it.
+
+The other 99 repositories contain Ruby code snippets, most with one file with two lines. The fast version of the
+endpoint would report that Ruby is this user's favorite language, when it reality, it's Javascript, because its the
+language that is most prominent down to the bits.
+
+
 ## Requirements Overview
 
 Students will implement a web application along with a supporting API to get the following data for a given user's 
