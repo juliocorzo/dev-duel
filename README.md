@@ -1,12 +1,16 @@
 # JavaScript Assignment - Dev Duel
 # Assignment Overview
 
-For this assignment, students are tasked with developing a small full-stack application that interfaces with [GitHub's API](https://developer.github.com/v3/) in order to aggregate, transform, and display a given user's profile and repository data.  
+For this assignment, students are tasked with developing a small full-stack application that interfaces with 
+[GitHub's API](https://developer.github.com/v3/) in order to aggregate, transform, and display a given user's profile 
+and repository data.  
 
 The assignment is composed of two independent pieces that make up a simple full-stack application.
 	
 1. A [Node](https://nodejs.org/en/docs/) **server** exposing an API using [Express](https://expressjs.com/en/api.html)
-2. A Web-based **client** using [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML), [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS), [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript), and [jQuery](https://api.jquery.com/)
+2. A Web-based **client** using [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML), 
+   [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS), 
+   [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript), and [jQuery](https://api.jquery.com/)
 
 
 This specification is split into multiple parts. 
@@ -23,11 +27,15 @@ This specification is split into multiple parts.
 
 ## Requirements Overview
 
-Students will implement a web application along with a supporting API to get the following data for a given user's GitHub profile. The backend will be implemented as a Node API using Express that will call GitHub's API to fetch data necessary to derive/display the data specified. The user will see a home page where they can choose between two options: **inspect** or **duel**.
+Students will implement a web application along with a supporting API to get the following data for a given user's 
+GitHub profile. The backend will be implemented as a Node API using Express that will call GitHub's API to fetch data 
+necessary to derive/display the data specified. The user will see a home page where they can choose between two options:
+**inspect** or **duel**.
 
 ### Profile
 
-Profiles are displayed on both the **inspect** page and the **duel** page. Both pages display profiles the same way. They are composed of the same fields and there should be no differences between a `profile` displayed on either page.
+Profiles are displayed on both the **inspect** page and the **duel** page. Both pages display profiles the same way. 
+They are composed of the same fields and there should be no differences between a `profile` displayed on either page.
 
 All `profile`s displayed on the website will be composed of the following fields
 - User's full name, location, bio, and avatar URL.
@@ -50,7 +58,10 @@ All `profile`s displayed on the website will be composed of the following fields
 On the **inspect** page, a client will enter a username, submit, and be displayed the user's `profile` data.
 
 ### Duel
-For the **duel** page, it is left up to the student to choose how a winner is determined. Two usernames will be entered, submitted, and their `profile` data displayed. Using the fields that are received from the API and displayed to the user, the student will need to visually signify differences in the data displayed as well as make an overall winner apparent to the user.
+For the **duel** page, it is left up to the student to choose how a winner is determined. Two usernames will be entered, 
+submitted, and their `profile` data displayed. Using the fields that are received from the API and displayed to the 
+user, the student will need to visually signify differences in the data displayed as well as make an overall winner 
+apparent to the user.
 
 ---
 
