@@ -1,36 +1,49 @@
 import axios from "axios";
 
 export const generateUser = (username, response) => {
-
     (async() => {
-
-        // Raw user and repository data is fetched and stored to avoid multiple recursive calls.
         let githubUser = await getUser(username)
         let githubRepositories = await getRepositories(username)
-
-        // Generates data that will be useful or added upon during user generation.
         let data = generateData(githubUser)
-
-        // Generates repository array with relevant information about each repository
         data.repositories = await generateRepositories(username, githubRepositories, data)
-
-        let user =  {
-            username: data.username,
-            name: data.name,
-            location: data.location,
-            bio: data.bio,
-            avatar_url: data.avatar_url,
-            titles: generateTitles(data),                       // TODO Implement the remaining titles.
-            favorite_language: getMostUsedLanguage(data.languageList),
-            public_repos: data.public_repos,
-            total_stars: data.starCount,
-            highest_starred: data.highestStarred,
-            perfect_repos: data.perfectRepos,
-            followers: data.followers,
-            following: data.following
-        }
+        let user = generateResponseBody(data)
         response.json(user)
     })()
+}
+
+export const generateUsers = (usernames, response) => {
+    (async() => {
+        const queryUsernames = usernames.username
+        let users = []
+        for(let x = 0; x < queryUsernames.length; x++) {
+            const username = queryUsernames[x]
+            let githubUser = await getUser(username)
+            let githubRepositories = await getRepositories(username)
+            let data = generateData(githubUser)
+            data.repositories = await generateRepositories(username, githubRepositories, data)
+            let user = generateResponseBody(data)
+            users.push(user)
+        }
+        response.json(users)
+    })()
+}
+
+function generateResponseBody(data) {
+    return {
+        username: data.username,
+        name: data.name,
+        location: data.location,
+        bio: data.bio,
+        avatar_url: data.avatar_url,
+        titles: generateTitles(data),
+        favorite_language: getMostUsedLanguage(data.languageList),
+        public_repos: data.public_repos,
+        total_stars: data.starCount,
+        highest_starred: data.highestStarred,
+        perfect_repos: data.perfectRepos,
+        followers: data.followers,
+        following: data.following
+    };
 }
 
 /**
@@ -81,8 +94,6 @@ function generateData(githubUser) {
         ponies: []
     }
 }
-
-
 
 async function generateRepositories(username, githubRepositories, data) {
     let repositories = []
