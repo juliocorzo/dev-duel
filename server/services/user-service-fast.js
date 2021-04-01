@@ -1,5 +1,11 @@
 import {getUser, getRepositories} from "./user-service-slow";
 
+/**
+ * Implements the `GET /user/:username` endpoint. Generates user data and returns it to the client.
+ *
+ * @param username of the GitHub user we are generating a response for.
+ * @param response how the generated data is sent back to the client.
+ */
 export const generateUserFast = (username, response) => {
     (async() => {
         const githubUser = await getUser(username)
@@ -11,6 +17,12 @@ export const generateUserFast = (username, response) => {
     })()
 }
 
+/**
+ * Implements the `GET /users/` endpoint. Generates user data and returns it to the client.
+ *
+ * @param usernames the array of usernames we are generating values of.
+ * @param response how the users are returned to the client
+ */
 export const generateUsersFast = (usernames, response) => {
     (async() => {
         const queryUsernames = usernames.username
@@ -28,6 +40,12 @@ export const generateUsersFast = (usernames, response) => {
     })()
 }
 
+/**
+ * Organizes data to parse and iterate upon, this generates an object with the data used during user generation
+ *
+ * @param githubUser the github user we're storing the data for.
+ * @returns See function to see what is being returned.
+ */
 function generateDataFast(githubUser) {
     return {
         username: githubUser.login,
@@ -52,6 +70,16 @@ function generateDataFast(githubUser) {
     }
 }
 
+/**
+ * Generates an array with relevant information from the user repositories and populates the data relevant
+ * to the response. Mainly used for parsing and storing data, this array of objects is not directly sent back
+ * to the client, rather, information derived from it is.
+ *
+ * @param username of the GitHub user
+ * @param githubRepositories GitHub repositories of the GitHub user
+ * @param data of the GitHub user
+ * @returns {Promise<[]>} array of objects each representing a repository of the user.
+ */
 async function generateRepositoriesFast(username, githubRepositories, data) {
     let repositories = []
     for(let x = 0; x < githubRepositories.length; x++) {
@@ -72,6 +100,12 @@ async function generateRepositoriesFast(username, githubRepositories, data) {
     return repositories
 }
 
+/**
+ * Organizes the data we have stored from a user in the format that it needs to have before being sent back
+ * to the client. Similar to generate data, but only with the relevant information for a response.
+ * @param data
+ * @returns see function for return type.
+ */
 function generateResponseBodyFast(data) {
     return {
         username: data.username,
@@ -91,42 +125,21 @@ function generateResponseBodyFast(data) {
     };
 }
 
-function getFavoriteLanguage(languages) {
-    let compare = '';
-    let mostFrequentLanguage = '';
-    languages.reduce((acc, val) => {
-        if(val in acc) {
-            acc[val]++;
-        }
-        else {
-            acc[val] = 1;
-        }
-        if(acc[val] > compare) {
-            compare = acc[val];
-            mostFrequentLanguage = val;
-        }
-        return acc;
-    }, {})
-    return mostFrequentLanguage
-}
-
-function getPony(languages) {
-    let pony = true
-    if(languages.length === 0) {
-        return pony
-    }
-    for(let x = 1; x < languages.length && pony; x++) {
-        if(languages[x - 1] !== languages[x]) {
-            pony = false
-        }
-    }
-    return pony
-}
-
-function getUniqueLanguages(languages) {
-    return languages.filter((language, index, ar) => ar.indexOf(language) === index)
-}
-
+/**
+ * Generates and returns a user's titles based on specific requirements:
+ *
+ * - Forker: If more than half of the user's repositories are forked from other repositories.
+ * - One-Trick Pony: If all the repositories have the same top language.
+ * - Jack of all Trades: If more than 10 languages are the top language of the users' repositories.
+ * - Stalker: If the user follows more than twice as many users as the users following them.
+ * - Mr. Popular: If the user is followed by more than twice of the users that they are following.
+ * - Founder: If the account was created before or on 2009. GitHub was launched in 2008.
+ * - Hatchling: If the account was created in 2021.
+ * - One-Hit Wonder: If more than half of the user stars belong to a single repository.
+ *
+ * @param data of the user whose titles are being generated.
+ * @returns [string]
+ */
 function generateTitlesFast(data) {
     let titles = []
     if(data.forkCount > data.repositories.length / 2) {
@@ -154,4 +167,58 @@ function generateTitlesFast(data) {
         titles.push('One-Hit Wonder')
     }
     return titles
+}
+
+/**
+ * Returns true if the top language in every repository is the same, false otherwise,
+ *
+ * @param languages string array that contains the top languages from every repository.
+ * @returns boolean
+ */
+function getPony(languages) {
+    let pony = true
+    if(languages.length === 0) {
+        return pony
+    }
+    for(let x = 1; x < languages.length && pony; x++) {
+        if(languages[x - 1] !== languages[x]) {
+            pony = false
+        }
+    }
+    return pony
+}
+
+/**
+ * Filters the languages array so that there are no duplicates and returns the filtered version.
+ *
+ * @param languages string array that contains the top languages from every repository.
+ * @returns [string]
+ */
+function getUniqueLanguages(languages) {
+    return languages.filter((language, index, ar) => ar.indexOf(language) === index)
+}
+
+/**
+ * Returns the language that is the most used in the greatest amount of repositories.
+ *
+ * @param languages string array that contains the top languages from every repository.
+ * @returns string | null
+ */
+function getFavoriteLanguage(languages) {
+    let compare = '';
+    let mostFrequentLanguage = '';
+    languages.reduce((acc, val) => {
+        if(val in acc) {
+            acc[val]++;
+        }
+        else {
+            acc[val] = 1;
+        }
+        if(acc[val] > compare) {
+            compare = acc[val];
+            mostFrequentLanguage = val;
+        }
+        return acc;
+    }, {})
+    return mostFrequentLanguage
 }
