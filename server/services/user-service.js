@@ -8,11 +8,11 @@ import axios from "axios";
  */
 export const generateUser = (username, response) => {
     (async() => {
-        let githubUser = await getUser(username)
-        let githubRepositories = await getRepositories(username)
+        const githubUser = await getUser(username)
+        const githubRepositories = await getRepositories(username)
         let data = generateData(githubUser)
         data.repositories = await generateRepositories(username, githubRepositories, data)
-        let user = generateResponseBody(data)
+        const user = generateResponseBody(data)
         response.json(user)
     })()
 }
@@ -29,11 +29,11 @@ export const generateUsers = (usernames, response) => {
         let users = []
         for(let x = 0; x < queryUsernames.length; x++) {
             const username = queryUsernames[x]
-            let githubUser = await getUser(username)
-            let githubRepositories = await getRepositories(username)
+            const githubUser = await getUser(username)
+            const githubRepositories = await getRepositories(username)
             let data = generateData(githubUser)
             data.repositories = await generateRepositories(username, githubRepositories, data)
-            let user = generateResponseBody(data)
+            const user = generateResponseBody(data)
             users.push(user)
         }
         response.json(users)
@@ -47,7 +47,7 @@ export const generateUsers = (usernames, response) => {
  * @returns {Promise<any>} the user information being returned by GitHub
  */
 async function getUser(username) {
-    let user = await axios.get(`users/${username}`);
+    const user = await axios.get(`users/${username}`);
     return user.data
 }
 
@@ -58,7 +58,7 @@ async function getUser(username) {
  * @returns {Promise<any>} repositories being returned.
  */
 async function getRepositories(username) {
-    let repositories = await axios.get(`users/${username}/repos`);
+    const repositories = await axios.get(`users/${username}/repos`);
     return repositories.data;
 }
 
@@ -71,7 +71,7 @@ async function getRepositories(username) {
  * @returns {Promise<any>} the languages we're fetching.
  */
 async function getLanguages(username, repository) {
-    let languages = await axios.get(`repos/${username}/${repository}/languages`)
+    const languages = await axios.get(`repos/${username}/${repository}/languages`)
     return languages.data
 }
 
@@ -142,7 +142,7 @@ function generateResponseBody(data) {
 async function generateRepositories(username, githubRepositories, data) {
     let repositories = []
     for(let x = 0; x < githubRepositories.length; x++) {
-        let tempRepository = {
+        const tempRepository = {
             name: githubRepositories[x].name,
             forked: githubRepositories[x].fork,
             stars: githubRepositories[x].stargazers_count,
@@ -175,7 +175,7 @@ async function generateLanguages(username, name, data) {
     const languageUsage = Object.values(githubLanguages)
     let languages = []
     for(let x = 0; x < languageName.length; x++) {
-        let language = {
+        const language = {
             language: languageName[x],
             usage: languageUsage[x],
             pony: 1
