@@ -100,7 +100,7 @@ function generateData(githubUser) {
         forkCount: 0,
         createdYear: parseInt((githubUser.created_at).substr(0, 4), 10),
         repositories: [],
-        languageList: [],
+        languages: [],
         ponies: []
     }
 }
@@ -119,7 +119,7 @@ function generateResponseBody(data) {
         bio: data.bio,
         avatar_url: data.avatar_url,
         titles: generateTitles(data),
-        favorite_language: getMostUsedLanguage(data.languageList),
+        favorite_language: getMostUsedLanguage(data.languages),
         public_repos: data.public_repos,
         total_stars: data.starCount,
         highest_starred: data.highestStarred,
@@ -142,29 +142,20 @@ function generateResponseBody(data) {
 async function generateRepositories(username, githubRepositories, data) {
     let repositories = []
     for(let x = 0; x < githubRepositories.length; x++) {
-
-        const languages = await generateLanguages(username, githubRepositories[x].name, data)
-
-
-        // Parsed repository is generated and pushed to the repository array here.
         let tempRepository = {
             name: githubRepositories[x].name,
             forked: githubRepositories[x].fork,
             stars: githubRepositories[x].stargazers_count,
             issues: githubRepositories[x].open_issues_count,
-            languages: languages
+            languages: await generateLanguages(username, githubRepositories[x].name, data)
         }
         repositories.push(tempRepository)
-
-        // Information relevant to titles is generated here.
         if(tempRepository.forked) data.forkCount++
         if(tempRepository.issues === 0) data.perfectRepos++
         data.starCount += tempRepository.stars
         if(tempRepository.stars > data.highestStarred) data.highestStarred = tempRepository.stars
-
     }
-
-    data.languageList = reduceLanguages(data)
+    data.languages = reduceLanguages(data)
     data.ponies = getPonies(data)
     return repositories
 }
@@ -190,7 +181,7 @@ async function generateLanguages(username, name, data) {
             pony: 1
         }
         languages.push(language)
-        data.languageList.push(language)
+        data.languages.push(language)
     }
     return languages
 }
@@ -206,13 +197,13 @@ async function generateLanguages(username, name, data) {
  * @returns [{language: string, usage: number, pony: boolean}]
  */
 function reduceLanguages(data) {
-    return data.languageList.map(({ language }) => language)
+    return data.languages.map(({ language }) => language)
         .filter((language, index, array) => array.indexOf(language) === index)
         .map(language => ({
             language,
-            usage: data.languageList.filter(entry => entry.language === language)
+            usage: data.languages.filter(entry => entry.language === language)
                 .reduce((accum, { usage }) => accum + usage, 0),
-            pony: data.languageList.filter(entry => entry.language === language)
+            pony: data.languages.filter(entry => entry.language === language)
                 .reduce((accum, { pony }) => accum + pony, 0) === data.public_repos
         }));
 }
@@ -226,9 +217,9 @@ function reduceLanguages(data) {
  */
 function getPonies(data) {
     let ponies = []
-    for(let x = 0; x < data.languageList.length; x++) {
-        if(data.languageList[x].pony) {
-            ponies.push(data.languageList[x].language)
+    for(let x = 0; x < data.languages.length; x++) {
+        if(data.languages[x].pony) {
+            ponies.push(data.languages[x].language)
         }
     }
     return ponies
@@ -276,7 +267,7 @@ function generateTitles(data) {
     if(data.ponies.length > 0) {
         titles.push('One-Trick Pony')
     }
-    if(data.languageList.length > 10) {
+    if(data.languages.length > 10) {
         titles.push('Jack of all Trades')
     }
     if(data.following > data.followers * 2) {
