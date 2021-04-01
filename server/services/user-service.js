@@ -1,5 +1,11 @@
 import axios from "axios";
 
+/**
+ * Implements the `GET user` endpoint. Generates user data and returns it to the client.
+ *
+ * @param username of the GitHub user we are generating a response for.
+ * @param response how the generated data is sent back to the client.
+ */
 export const generateUser = (username, response) => {
     (async() => {
         let githubUser = await getUser(username)
@@ -11,6 +17,12 @@ export const generateUser = (username, response) => {
     })()
 }
 
+/**
+ * Implements the `GET users` endpoint. Generates user data and returns it to the client.
+ *
+ * @param usernames the array of usernames we are generating values of.
+ * @param response how the users are returned to the client
+ */
 export const generateUsers = (usernames, response) => {
     (async() => {
         const queryUsernames = usernames.username
