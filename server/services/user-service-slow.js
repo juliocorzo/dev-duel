@@ -1,12 +1,21 @@
 import axios from "axios";
 
 /**
- * Implements the `GET user` endpoint. Generates user data and returns it to the client.
+ * Slow version of endpoint handling. The difference between the fast versions of the endpoint implementations and
+ * these ones is that these get an exact language usage result, which requires more API calls (one per repository),
+ * and one request can use up as many calls to the GitHub API as repositories the user you are requesting has.
+ *
+ * The benefit is that it gets a more accurate view of language usage, the downside is that requests take about
+ * ten times longer to respond.
+ */
+
+/**
+ * Implements the `GET /slow/user/:username` endpoint. Generates user data and returns it to the client.
  *
  * @param username of the GitHub user we are generating a response for.
  * @param response how the generated data is sent back to the client.
  */
-export const generateUser = (username, response) => {
+export const generateUserSlow = (username, response) => {
     (async() => {
         const githubUser = await getUser(username)
         const githubRepositories = await getRepositories(username)
@@ -18,12 +27,12 @@ export const generateUser = (username, response) => {
 }
 
 /**
- * Implements the `GET users` endpoint. Generates user data and returns it to the client.
+ * Implements the `GET /slow/users/` endpoint. Generates user data and returns it to the client.
  *
  * @param usernames the array of usernames we are generating values of.
  * @param response how the users are returned to the client
  */
-export const generateUsers = (usernames, response) => {
+export const generateUsersSlow = (usernames, response) => {
     (async() => {
         const queryUsernames = usernames.username
         let users = []
@@ -46,7 +55,7 @@ export const generateUsers = (usernames, response) => {
  * @param username of the user that is being fetched.
  * @returns {Promise<any>} the user information being returned by GitHub
  */
-async function getUser(username) {
+export async function getUser(username) {
     const user = await axios.get(`users/${username}`);
     return user.data
 }
@@ -57,7 +66,7 @@ async function getUser(username) {
  * @param username of the user whose repositories are being returned.
  * @returns {Promise<any>} repositories being returned.
  */
-async function getRepositories(username) {
+export async function getRepositories(username) {
     const repositories = await axios.get(`users/${username}/repos`);
     return repositories.data;
 }
