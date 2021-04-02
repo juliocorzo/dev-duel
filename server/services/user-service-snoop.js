@@ -85,7 +85,7 @@ async function generateRepositories(username, githubRepositories, data) {
                 issues: githubRepositories[x].open_issues_count,
                 forks: githubRepositories[x].forks_count,
             },
-            languages: await generateLanguages(username, githubRepositories[x].name, data)
+            // languages: await generateLanguages(username, githubRepositories[x].name, data) // FIXME only disabled for client testing.
         }
         repositories.push(tempRepository)
         data.statistics.disk_usage += tempRepository.statistics.size
