@@ -5,8 +5,9 @@ import token from '../../token'
 
 import validation from './validation'
 
-import { generateUserSlow, generateUsersSlow } from "../services/user-service-slow";
+import { generateUserSlow, generateUsersSlow } from "../services/user-service-slow"
 import { generateUserFast, generateUsersFast } from "../services/user-service-fast"
+import { snoopUser } from "../services/user-service-snoop"
 
 axios.defaults.baseURL = 'https://api.github.com/'
 axios.defaults.headers.common['Authorization'] = token
@@ -30,6 +31,11 @@ export default () => {
   /** GET /api/users? - Get users */
   router.get('/users/', validate(validation.users), (req, res) => {
       generateUsersFast(req.query, res)
+  })
+
+  /** GET /api/snoop/:username - Get deeper user data */
+  router.get('/snoop/:username', validate(validation.user), (req, res) => {
+      snoopUser(req.params.username, res)
   })
 
   /**
