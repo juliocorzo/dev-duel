@@ -88,7 +88,7 @@ export async function getRepositories(username, repositoryCount) {
  * @param repository whose languages were fetching.
  * @returns {Promise<any>} the languages we're fetching.
  */
-async function getLanguages(username, repository) {
+export async function getLanguages(username, repository) {
     const languages = await axios.get(`repos/${username}/${repository}/languages`)
     return languages.data
 }
