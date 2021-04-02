@@ -50,7 +50,7 @@ function generateDataFast(githubUser) {
     return {
         username: githubUser.login,
         name: githubUser.name !== null ? githubUser.name : 'No name provided',
-        location: githubUser.location !== null ? githubUser.location : 'No name provided',
+        location: githubUser.location !== null ? githubUser.location : 'No location provided',
         email: githubUser.email !== null ? githubUser.email : 'No email provided.',
         bio: githubUser.bio !== null ? githubUser.bio : 'No bio provided.',
         avatar_url: githubUser.avatar_url,
