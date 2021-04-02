@@ -68,7 +68,7 @@ const fixTitles = titles => {
 const chooseWinner = (left, right) => {
     // TODO Set up win conditions, assuming left won right now
 
-    $('#winner-name').html(`Congratulations ${right.username}, you are the winner!`)
+    $('#winner-name').html(`Congratulations <strong>${right.username}</strong>, you are the winner!`)
     $('.winner-container').removeClass('invisible')
 }
 
