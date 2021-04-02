@@ -18,7 +18,7 @@ import axios from "axios";
 export const generateUserSlow = (username, response) => {
     (async() => {
         const githubUser = await getUser(username)
-        const githubRepositories = await getRepositories(username)
+        const githubRepositories = await getRepositories(username, githubUser.public_repos)
         let data = generateData(githubUser)
         data.repositories = await generateRepositories(username, githubRepositories, data)
         const user = generateResponseBody(data)
@@ -39,7 +39,7 @@ export const generateUsersSlow = (usernames, response) => {
         for(let x = 0; x < queryUsernames.length; x++) {
             const username = queryUsernames[x]
             const githubUser = await getUser(username)
-            const githubRepositories = await getRepositories(username)
+            const githubRepositories = await getRepositories(username, githubUser.public_repos)
             let data = generateData(githubUser)
             data.repositories = await generateRepositories(username, githubRepositories, data)
             const user = generateResponseBody(data)
@@ -64,11 +64,20 @@ export async function getUser(username) {
  * Returns a user's repositories from GitHub's API as an array of objects.
  *
  * @param username of the user whose repositories are being returned.
+ * @param repositoryCount the amount of public repositories a user has.
  * @returns {Promise<any>} repositories being returned.
  */
-export async function getRepositories(username) {
-    const repositories = await axios.get(`users/${username}/repos`);
-    return repositories.data;
+export async function getRepositories(username, repositoryCount) {
+    const pages = Math.floor(repositoryCount / 100) + 1
+    let query = `users/${username}/repos?page=1&per_page=100`
+    const response = await axios.get(query);
+    let githubRepositories = response.data
+    for(let x = 2; x <= pages; x++) {
+        query = `users/${username}/repos?page=${x}&per_page=100`
+        const tempResponse = await axios.get(query);
+        githubRepositories = githubRepositories.concat(tempResponse.data)
+    }
+    return githubRepositories;
 }
 
 /**

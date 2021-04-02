@@ -9,7 +9,7 @@ import {getUser, getRepositories} from "./user-service-slow";
 export const generateUserFast = (username, response) => {
     (async() => {
         const githubUser = await getUser(username)
-        const githubRepositories = await getRepositories(username)
+        const githubRepositories = await getRepositories(username, githubUser.public_repos)
         let data = generateDataFast(githubUser)
         data.repositories = await generateRepositoriesFast(username, githubRepositories, data)
         const user = generateResponseBodyFast(data)
@@ -30,7 +30,7 @@ export const generateUsersFast = (usernames, response) => {
         for(let x = 0; x < queryUsernames.length; x++) {
             const username = queryUsernames[x]
             const githubUser = await getUser(username)
-            const githubRepositories = await getRepositories(username)
+            const githubRepositories = await getRepositories(username, githubUser.public_repos)
             let data = generateDataFast(githubUser)
             data.repositories = await generateRepositoriesFast(username, githubRepositories, data)
             const user = generateResponseBodyFast(data)
