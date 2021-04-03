@@ -12,6 +12,15 @@ $('form').submit(function() {
             chooseWinner(left, right)
 
             $('.duel-container').removeClass('invisible')
+            $('.error-container').addClass('invisible')
+        })
+        .catch(err => {
+            console.log(`Error getting data for ${request}`)
+            console.log(err)
+            $('.duel-container').addClass('invisible')
+            $('.winner-container').addClass('invisible')
+            $('.error-container').removeClass('invisible')
+            $('#user-error').html(`Error fetching the usernames, are you sure they exist?`)
         })
     return false
 })
@@ -31,8 +40,8 @@ const populatePage = (left, right) => {
     $('.right .avatar').attr("src", right.avatar_url)
     $('.left .titles').html(fixTitles(left.titles))
     $('.right .titles').html(fixTitles(right.titles))
-    $('.left .favorite-language').html(left.favorite_language)
-    $('.right .favorite-language').html(right.favorite_language)
+    $('.left .favorite-language').html(checkNull(left.favorite_language))
+    $('.right .favorite-language').html(checkNull(right.favorite_language))
     $('.left .total-stars').html(left.total_stars)
     $('.right .total-stars').html(right.total_stars)
     $('.left .most-starred').html(left.highest_starred)
@@ -45,6 +54,13 @@ const populatePage = (left, right) => {
     $('.right .followers').html(right.followers)
     $('.left .following').html(left.following)
     $('.right .following').html(right.following)
+}
+
+const checkNull = data => {
+    if(data === null) {
+        return 'null'
+    }
+    return data
 }
 
 const fixTitles = titles => {
@@ -66,10 +82,14 @@ const fixTitles = titles => {
 }
 
 const chooseWinner = (left, right) => {
-    // TODO Set up win conditions, assuming left won right now
+    let duelWinner = left.username
+    if(Math.floor(Math.random() * 2) === 0) {
+        duelWinner = right.username
+    }
 
-    $('#winner-name').html(`Congratulations <strong>${right.username}</strong>, you are the winner!`)
+    $('#winner-name').html(`Congratulations <strong>${duelWinner}</strong>, you are the winner!`)
     $('.winner-container').removeClass('invisible')
+    $('.error-container').addClass('invisible')
 }
 
 /*
