@@ -40,13 +40,14 @@ $('form').submit(() => {
             $('.followers').html(data.followers)
             $('.following').html(data.following)
 
+            $('.error-container').addClass('invisible')
             $('.user-container').removeClass('invisible')
         })
         .catch(err => {
             console.log(`Error getting data for ${username}`)
-            console.log(err)
-            $('.user-error').removeClass('hide')
-            $('.error').html(`Error getting username ${username}, it doesn't exist.`)
+            $('.error-container').removeClass('invisible')
+            $('.user-container').addClass('invisible')
+            $('#user-error').html(`Error fetching ${username}, are you sure they exist?`)
         })
 
     return false

@@ -25,13 +25,23 @@ export default () => {
   })
 
   /** GET /api/user/:username - Get user */
-  router.get('/user/:username', validate(validation.user), (req, res) => {
-    generateUser(req.params.username, res)
+  router.get('/user/:username', validate(validation.user), async (req, res) => {
+    try {
+      const user = await generateUser(req.params.username)
+      res.json(user)
+    } catch (error) {
+      res.status(404).send(error.message)
+    }
   })
 
   /** GET /api/users? - Get users */
-  router.get('/users/', validate(validation.users), (req, res) => {
-      generateUsers(req.query, res)
+  router.get('/users/', validate(validation.users), async (req, res) => {
+    try {
+      const users = await generateUsers(req.query)
+      res.json(users)
+    } catch (error) {
+      res.status(404).send(error.message)
+    }
   })
 
   /** GET /api/snoop/:username - Get deeper user data */

@@ -1,36 +1,36 @@
 import axios from "axios";
 
-export const generateUser = (username, response) => {
-    (async() => {
+export async function generateUser(username) {
+    const githubUser = await getUser(username)
+    const githubRepositories = await getRepositories(username, githubUser.public_repos)
+    let data = generateData(githubUser)
+    data.repositories = await generateRepositories(username, githubRepositories, data)
+    return generateResponseBody(data)
+}
+
+export async function generateUsers(usernames) {
+    const queryUsernames = usernames.username
+    let users = []
+    for(let x = 0; x < queryUsernames.length; x++) {
+        const username = queryUsernames[x]
         const githubUser = await getUser(username)
         const githubRepositories = await getRepositories(username, githubUser.public_repos)
         let data = generateData(githubUser)
         data.repositories = await generateRepositories(username, githubRepositories, data)
         const user = generateResponseBody(data)
-        response.json(user)
-    })()
-}
-
-export const generateUsers = (usernames, response) => {
-    (async() => {
-        const queryUsernames = usernames.username
-        let users = []
-        for(let x = 0; x < queryUsernames.length; x++) {
-            const username = queryUsernames[x]
-            const githubUser = await getUser(username)
-            const githubRepositories = await getRepositories(username, githubUser.public_repos)
-            let data = generateData(githubUser)
-            data.repositories = await generateRepositories(username, githubRepositories, data)
-            const user = generateResponseBody(data)
-            users.push(user)
-        }
-        response.json(users)
-    })()
+        users.push(user)
+    }
+    return users
 }
 
 export async function getUser(username, response) {
-    const user = await axios.get(`users/${username}`)
-    return user.data
+    try {
+        const user = await axios.get(`users/${username}`)
+        return user.data
+    } catch (error) {
+        throw new Error(`Unable to find user ${username}`)
+    }
+
 }
 
 export async function getRepositories(username, repositoryCount) {
