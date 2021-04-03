@@ -7,6 +7,7 @@ import validation from './validation'
 
 import { generateUserSlow, generateUsersSlow } from "../services/user-service-slow"
 import { generateUserFast, generateUsersFast } from "../services/user-service-fast"
+import { generateUser, generateUsers } from "../services/user-service";
 import { snoopUser } from "../services/user-service-snoop"
 
 axios.defaults.baseURL = 'https://api.github.com/'
@@ -25,12 +26,12 @@ export default () => {
 
   /** GET /api/user/:username - Get user */
   router.get('/user/:username', validate(validation.user), (req, res) => {
-    generateUserFast(req.params.username, res)
+    generateUser(req.params.username, res)
   })
 
   /** GET /api/users? - Get users */
   router.get('/users/', validate(validation.users), (req, res) => {
-      generateUsersFast(req.query, res)
+      generateUsers(req.query, res)
   })
 
   /** GET /api/snoop/:username - Get deeper user data */

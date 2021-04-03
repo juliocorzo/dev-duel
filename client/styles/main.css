@@ -1,3 +1,4 @@
 .invisible {
     visibility: hidden;
+    display: none !important;
 }

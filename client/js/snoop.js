@@ -57,7 +57,17 @@ const generateGithubInformation = user => {
 
 const generateGithubStatistics = statistics => {
     let information = ''
-
+    information += checkNull(statistics.repositories, 'Repositories')
+    information += checkNull(statistics.gists, 'Gists')
+    information += checkNull(statistics.followers, 'Followers')
+    information += checkNull(statistics.following, 'Following')
+    information += checkNull(statistics.stars, 'Stars')
+    information += checkNull(statistics.forks, 'Forks')
+    information += checkNull(statistics.languages, 'Languages')
+    information += checkNull(statistics.disk_usage, 'Disk usage')
+    information += checkNull(statistics.days_since_creation, 'Days since creation')
+    information += checkNull(statistics.days_since_update, 'Days since update')
+    $('.github-statistics').html(information)
 }
 
 const generateCode = (code, tag) => {
