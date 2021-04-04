@@ -6,7 +6,6 @@ import token from '../../token'
 import validation from './validation'
 
 import { generateUserSlow, generateUsersSlow } from "../services/user-service-slow"
-import { generateUserFast, generateUsersFast } from "../services/user-service-fast"
 import { generateUser, generateUsers } from "../services/user-service";
 import { snoopUser } from "../services/user-service-snoop"
 
