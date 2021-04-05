@@ -13,6 +13,7 @@ import config from './config/index'
 // Create express server
 let app = express()
 app.server = http.createServer(app)
+app.use(express.static('client/index.js'));
 
 // logger
 app.use(morgan('dev'))
