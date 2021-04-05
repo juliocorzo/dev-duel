@@ -5,6 +5,8 @@ please visit my [FastTrack project on GitHub](https://github.com/users/juliocorz
 
 ## Project overview
 
+![Project frontpage](project-images/duel.png)
+
 For this project, I was tasked with developing a small full-stack application that interfaces with [GitHub's API](https://developer.github.com/v3/)
  in order to aggregate, transform, and display a GitHub user's profile and repository data. 
 
