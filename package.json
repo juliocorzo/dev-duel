@@ -2,7 +2,7 @@
   "name": "dev-duel",
   "main": "/server/index.js",
   "scripts": {
-    "start":"node server/index.js",
+    "start": "nodemon -w ./server --exec \"babel-node server\"",
     "serve": "concurrently \"npm run serve-api\" \"npm run serve-static\"",
     "serve-api": "nodemon -w ./server --exec \"babel-node server\"",
     "serve-static": "live-server client --host=localhost --port=8080 --watch=./"
